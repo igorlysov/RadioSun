@@ -1,2 +1,4 @@
-# RadioSun
-Репозиторий проекта "Использование методов машинного обучения в прогнозировании солнечной активности на основе радиоастрономических наблюдений"
+*********
+``soleil``
+*********
+``soleil`` is a Python software package that provides tools for accessing, loading and interacting with solar data acquared from Russion astronomical instruments.
