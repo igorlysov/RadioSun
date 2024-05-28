@@ -1,2 +1,3 @@
-# ``soleil``
-``soleil`` is a Python software package that provides tools for accessing, loading and interacting with solar data acquared from Russian astronomical instruments.
+# ``RadioSun``
+``RadioSun`` это модуль для языка программирования Python, который предоставляет инструменты для получения, загрузки и обработки радиоастрономических данных радиотелескопа РАТАН-600
+
