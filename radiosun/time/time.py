@@ -1,12 +1,12 @@
 import re
+from typing import Optional, Union, List, Any
 from datetime import date, datetime
 from functools import singledispatch
 import numpy as np
-import pandas 
+import pandas
 import astropy.time
 import astropy.units as u
 from astropy.time import Time
-
 
 TIME_REGEX = {
     '%Y': r'(?P<year>\d{4})',
@@ -19,7 +19,6 @@ TIME_REGEX = {
     '%f': r'(?P<microsecond>\d+)',
     '%b': r'(?P<month_str>[a-zA-Z]+)',
 }
-
 
 COMMON_TIME_FORMATS = [
     "%Y-%m-%dT%H:%M:%S.%f",  # 2007-05-04T21:08:12.999999
@@ -54,19 +53,71 @@ COMMON_TIME_FORMATS = [
     "%Y/%m/%dT%H:%M",  # 2007/05/04T21:08
 ]
 
-def check_equal_time(t1, t2):
+
+def check_equal_time(t1: Time, t2: Time) -> bool:
+    """
+    Check if two time objects are equal within a nanosecond precision.
+
+    :param t1: The first time object.
+    :type t1: Time
+    :param t2: The second time object.
+    :type t2: Time
+    :returns: True if the time difference is less than a nanosecond, False otherwise.
+    :rtype: bool
+
+    **Example:**
+
+    .. code-block:: python
+
+        from astropy.time import Time
+        t1 = Time('2020-01-01T00:00:00.000000000')
+        t2 = Time('2020-01-01T00:00:00.000000001')
+        check_equal_time(t1, t2)  # Returns: True
+    """
     if abs(t2 - t1) < 1 * u.nanosecond:
-        return True 
+        return True
     return False
 
 
-def get_time_format(time_string):
+def get_time_format(time_string: str) -> Optional[str]:
+    """
+    Determine the time format of a given time string.
+
+    :param time_string: The time string to check.
+    :type time_string: str
+    :returns: The format string if a matching format is found, otherwise None.
+    :rtype: Optional[str]
+
+    **Example:**
+
+    .. code-block:: python
+
+        get_time_format('2020-01-01T00:00:00.000000')
+        # Returns: '%Y-%m-%dT%H:%M:%S.%f'
+    """
     for time_format in COMMON_TIME_FORMATS:
         if regex_time(time_string, time_format) is not None:
             return time_format
 
 
-def regex_time(time_string, format):
+def regex_time(time_string: str, format: str) -> Optional[str]:
+    """
+    Match a time string against a format using regular expressions.
+
+    :param time_string: The time string to match.
+    :type time_string: str
+    :param format: The time format string.
+    :type format: str
+    :returns: The time string if a match is found, otherwise None.
+    :rtype: Optional[str]
+
+    **Example:**
+
+    .. code-block:: python
+
+        regex_time('2020-01-01T00:00:00.000000', '%Y-%m-%dT%H:%M:%S.%f')
+        # Returns: '2020-01-01T00:00:00.000000'
+    """
     for key, value in TIME_REGEX.items():
         format = format.replace(key, value)
     match = re.match(format, time_string)
@@ -76,7 +127,25 @@ def regex_time(time_string, format):
 
 
 @singledispatch
-def create_time(time_string, format=None, **kwargs):
+def create_time(time_string: Any, format: Optional[str] = None, **kwargs) -> Time:
+    """
+    Create an Astropy Time object from various time representations.
+
+    :param time_string: The time data, which can be of various types.
+    :type time_string: Any
+    :param format: The time format string, if known.
+    :type format: Optional[str]
+    :param kwargs: Additional keyword arguments passed to ``astropy.time.Time``.
+    :returns: An Astropy Time object.
+    :rtype: Time
+
+    **Example:**
+
+    .. code-block:: python
+
+        create_time('2020-01-01T00:00:00.000000')
+        # Returns: <Time object: scale='utc' format='isot' value=2020-01-01T00:00:00.000>
+    """
     return Time(time_string, format=format, **kwargs)
 
 
